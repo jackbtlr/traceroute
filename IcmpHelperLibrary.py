@@ -208,7 +208,27 @@ class IcmpHelperLibrary:
 
         def __validateIcmpReplyPacketWithOriginalPingData(self, icmpReplyPacket):
             # Hint: Work through comparing each value and identify if this is a valid response.
-            icmpReplyPacket.setIsValidResponse(True)
+
+            # confirm packet type and packet code are both 0
+            type_is_valid       =   icmpReplyPacket.getIcmpType() == 0
+            code_is_valid       =   icmpReplyPacket.getIcmpCode() == 0
+
+            # confirm identifier and sequence number match request
+            packet_id_is_valid  =   icmpReplyPacket.getIcmpIdentifier() == self.__packetIdentifier
+            seq_num_is_valid    =   icmpReplyPacket.setIcmpSequenceNumber() == self.__packetSequenceNumber
+
+            # confirm data matches
+            data_is_valid       =   (icmpReplyPacket.getDataRaw() == self.__dataRaw)
+
+            icmpReplyPacket.set_valid_type(type_is_valid)
+            icmpReplyPacket.set_valid_code(code_is_valid)
+            icmpReplyPacket.set_valid_id(packet_id_is_valid)
+            icmpReplyPacket.set_valid_seq_num(seq_num_is_valid)
+            icmpReplyPacket.set_valid_data(data_is_valid)
+
+            reply_is_valid = type_is_valid and code_is_valid and packet_id_is_valid and seq_num_is_valid and data_is_valid
+
+            icmpReplyPacket.setIsValidResponse(reply_is_valid)
             pass
 
         # ############################################################################################################ #
@@ -333,6 +353,12 @@ class IcmpHelperLibrary:
         # ############################################################################################################ #
         __recvPacket = b''
         __isValidResponse = False
+        valid_type      =   False
+        valid_code      =   False
+        valid_id        =   False
+        valid_seq_num   =   False
+        valid_data      =   False
+
 
         # ############################################################################################################ #
         # IcmpPacket_EchoReply Constructors                                                                            #
@@ -402,7 +428,21 @@ class IcmpHelperLibrary:
 
         def isValidResponse(self):
             return self.__isValidResponse
+        
+        def get_valid_type(self):
+            return self.valid_type
+        
+        def get_valid_code(self):
+            return self.valid_code
 
+        def get_valid_id(self):
+            return self.valid_id
+
+        def get_valid_seq_num(self):
+            return self.valid_seq_num
+        
+        def get_valid_data(self):
+            return self.valid_data
         # ############################################################################################################ #
         # IcmpPacket_EchoReply Setters                                                                                 #
         #                                                                                                              #
@@ -412,6 +452,21 @@ class IcmpHelperLibrary:
         # ############################################################################################################ #
         def setIsValidResponse(self, booleanValue):
             self.__isValidResponse = booleanValue
+
+        def set_valid_type(self, value):
+            self.valid_type = value
+        
+        def set_valid_code(self, value):
+            self.valid_code = value
+
+        def set_valid_id(self, value):
+            self.valid_id = value
+
+        def set_valid_seq_num(self, value):
+            self.valid_seq_num = value
+        
+        def set_valid_data(self, value):
+            self.valid_data = value
 
         # ############################################################################################################ #
         # IcmpPacket_EchoReply Private Functions                                                                       #
@@ -461,7 +516,7 @@ class IcmpHelperLibrary:
     #                                                                                                                  #
     #                                                                                                                  #
     # ################################################################################################################ #
-    __DEBUG_IcmpHelperLibrary = False                  # Allows for debug output
+    __DEBUG_IcmpHelperLibrary = True                  # Allows for debug output
 
     # ################################################################################################################ #
     # IcmpHelperLibrary Private Functions                                                                              #
