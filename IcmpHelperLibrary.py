@@ -548,6 +548,24 @@ class IcmpHelperLibrary:
 
     def __sendIcmpTraceRoute(self, host):
         print("sendIcmpTraceRoute Started...") if self.__DEBUG_IcmpHelperLibrary else 0
+        for i in range(3):
+            # Build packet
+            icmpPacket = IcmpHelperLibrary.IcmpPacket()
+
+            randomIdentifier = (os.getpid() & 0xffff)      # Get as 16 bit number - Limit based on ICMP header standards
+                                                           # Some PIDs are larger than 16 bit
+
+            packetIdentifier = randomIdentifier
+            packetSequenceNumber = i
+
+            icmpPacket.setTtl(1)
+
+            icmpPacket.buildPacket_echoRequest(packetIdentifier, packetSequenceNumber)  # Build ICMP for IP payload
+            icmpPacket.setIcmpTarget(host)
+            icmpPacket.sendEchoRequest()                                                # Build IP
+
+            icmpPacket.printIcmpPacketHeader_hex() if self.__DEBUG_IcmpHelperLibrary else 0
+            icmpPacket.printIcmpPacket_hex() if self.__DEBUG_IcmpHelperLibrary else 0
         # Build code for trace route here
 
     # ################################################################################################################ #
@@ -578,7 +596,8 @@ def main():
 
 
     # Choose one of the following by uncommenting out the line
-    icmpHelperPing.sendPing("209.233.126.254")
+    # icmpHelperPing.sendPing("209.233.126.254")
+    icmpHelperPing.traceRoute("209.233.126.254")
     # icmpHelperPing.sendPing("www.google.com")
     # icmpHelperPing.sendPing("gaia.cs.umass.edu")
     # icmpHelperPing.traceRoute("164.151.129.20")
