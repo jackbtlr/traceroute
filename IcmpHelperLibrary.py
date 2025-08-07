@@ -215,10 +215,10 @@ class IcmpHelperLibrary:
 
             # confirm identifier and sequence number match request
             packet_id_is_valid  =   icmpReplyPacket.getIcmpIdentifier() == self.__packetIdentifier
-            seq_num_is_valid    =   icmpReplyPacket.setIcmpSequenceNumber() == self.__packetSequenceNumber
+            seq_num_is_valid    =   icmpReplyPacket.getIcmpSequenceNumber() == self.__packetSequenceNumber
 
             # confirm data matches
-            data_is_valid       =   (icmpReplyPacket.getDataRaw() == self.__dataRaw)
+            data_is_valid       =   (icmpReplyPacket.getIcmpData() == self.__dataRaw)
 
             icmpReplyPacket.set_valid_type(type_is_valid)
             icmpReplyPacket.set_valid_code(code_is_valid)
@@ -516,7 +516,7 @@ class IcmpHelperLibrary:
     #                                                                                                                  #
     #                                                                                                                  #
     # ################################################################################################################ #
-    __DEBUG_IcmpHelperLibrary = True                  # Allows for debug output
+    __DEBUG_IcmpHelperLibrary = False                  # Allows for debug output
 
     # ################################################################################################################ #
     # IcmpHelperLibrary Private Functions                                                                              #
